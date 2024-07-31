@@ -1,0 +1,38 @@
+# Ignorar archivos y carpetas de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de entorno y configuración
+.env
+.vscode/
+.idea/
+
+# Ignorar dependencias de Node.js
+node_modules/
+
+# Ignorar dependencias de Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+env/
+venv/
+
+# Ignorar archivos de construcción
+dist/
+build/
+
+# Ignorar archivos y carpetas generados por el editor
+*.log
+*.swp
+
+# Ignorar archivos temporales
+*.tmp
+*.bak
+
+# Ignorar archivos de compilación
+*.o
+*.obj
+*.so
+*.dll
+
+backend/uploads/*
