@@ -3,7 +3,6 @@
 Thumbs.db
 
 # Ignorar archivos de entorno y configuración
-.env
 .vscode/
 .idea/
 
