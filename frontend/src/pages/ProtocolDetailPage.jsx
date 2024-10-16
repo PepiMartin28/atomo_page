@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { NavBar } from '../components/Navbar';
 import { ContentCard } from '../components/ContentCard';
 import { verifyToken } from '../api/auth/verifyToken';
-import { getProtocolDetail } from '../api/protocol/getProtocolDetail';
+import { getProtocolDetail } from '../api/protocol/protocols_functions/getProtocolDetail';
+import { protocolLog } from '../api/logs_functions/protocolLog';
 import { Box, Heading, Stack, Text, Divider, Spinner, Center, Flex } from '@chakra-ui/react';
 import { Footer } from '../components/Footer';
 
@@ -18,6 +19,7 @@ export function ProtocolDetailPage() {
             try {
                 const data = await getProtocolDetail(protocol_id);
                 setProtocol(data);
+                await protocolLog(protocol_id)
             } catch (error) {
                 console.error("Failed to fetch protocol:", error);
             }

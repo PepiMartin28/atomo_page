@@ -4,7 +4,7 @@ import { Footer } from '../components/Footer.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { verifyToken } from '../api/auth/verifyToken.js';
-import { listCategories } from '../api/protocol/listCategories.js';
+import { listCategories } from '../api/protocol/category_functions/listCategories';
 import { CategoryCard } from '../components/CategoryCard.jsx';
 
 export function CategoriesPage() {
@@ -45,12 +45,12 @@ export function CategoriesPage() {
         <Flex direction="column" minHeight="100vh">
             <NavBar />
             <Box pt={24} px={6} textAlign="center">
-                <Heading>
-                    Categorías de Protocolos
+                <Heading mt={4}>
+                    Categorías de protocolos
                 </Heading>
             </Box>
             <Button colorScheme="blue" onClick={handleAddCategory} mt={6} mx={6} >
-                Añadir Categoría
+                Añadir categoría
             </Button>
             <Box flex="1" pt={6} px={6} pb={6} mb={10}>
                 {loading ? (

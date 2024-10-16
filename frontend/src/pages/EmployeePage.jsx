@@ -4,8 +4,8 @@ import { NavBar } from '../components/Navbar.jsx';
 import { ProtocolCard } from '../components/ProtocolCard.jsx';
 import { Stack, Box, Select, Text, Input, Button, Flex, Spinner } from '@chakra-ui/react';
 import { verifyToken } from '../api/auth/verifyToken.js';
-import { getProtocols } from '../api/protocol/getProtocols.js';
-import { getCategoriesByGroup } from '../api/protocol/getCategoriesByGroup.js';
+import { getProtocols } from '../api/protocol/protocols_functions/getProtocols.js';
+import { getCategoriesByGroup } from '../api/protocol/category_functions/getCategoriesByGroup.js';
 import { Footer } from '../components/Footer.jsx';
 
 export function EmployeePage() {

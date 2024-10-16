@@ -18,7 +18,7 @@ def post():
     
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     try:
         duplicated = Employee.query.filter_by(email=data['email']).first()
@@ -81,7 +81,7 @@ def register(id):
 def list():
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     subquery = (
         db.session.query(
@@ -115,7 +115,7 @@ def list():
         
         response = [
             {
-                'id': str(employee.employee_id),
+                'employee_id': str(employee.employee_id),
                 'email': employee.email,
                 'name': employee.name,
                 'last_name': employee.last_name,
@@ -129,11 +129,12 @@ def list():
     except Exception as e:
         return jsonify({'message': f'Ocurrió un error: {str(e)}'}), 500
 
+
 @employee_routes.get('/<id>')
 def get(id):
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -174,7 +175,7 @@ def get(id):
             return jsonify({'message':'No se encuentra el usuario'}), 404
         
         response ={
-                'id': str(employee.employee_id),
+                'employee_id': str(employee.employee_id),
                 'email': employee.email,
                 'name': employee.name,
                 'last_name': employee.last_name,
@@ -193,7 +194,7 @@ def get(id):
 def get_info():
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     data = get_fields(request.headers, ['id'])
     
@@ -223,7 +224,7 @@ def get_info():
             return jsonify({'message':'No se encuentra el usuario'}), 404
         
         response ={
-                'id': str(employee.employee_id),
+                'employee_id': str(employee.employee_id),
                 'email': employee.email,
                 'name': employee.name,
                 'last_name': employee.last_name,
@@ -242,7 +243,7 @@ def get_info():
 def update(id):
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -265,12 +266,42 @@ def update(id):
         db.session.rollback()
         return jsonify({'message': f'Ocurrió un error: {str(e)}'}), 500
 
+@employee_routes.put('/change_group/<id>')
+def change_group(id):
+    token_valid = check_token(request.headers, 'Administrador')
+    if not token_valid:
+        return jsonify({'message': 'No tiene permisos'}), 403  
+    
+    id = validate_uuid(id)
+    if not id:
+        return jsonify({"message": "Ingrese un ID válido"}), 400  
+    
+    try:
+        employee = db.session.query(Employee).get(id)
+        
+        if not employee:
+            return jsonify({'message': 'El empleado que desea actualizar no existe'}), 404  
+        
+        data = request.get_json()
+        
+        group_id = validate_uuid(data.get('group_id'))
+        if not group_id: 
+            return jsonify({"message": "Ingrese un ID de grupo válido"}), 400 
+        
+        employee.group_id = group_id
+        
+        db.session.commit()
+        
+        return jsonify({'message': 'El empleado se ha actualizado correctamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Ocurrió un error: {str(e)}'}), 500
 
 @employee_routes.delete('/<id>')
 def delete(id):
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -294,7 +325,7 @@ def delete(id):
 def active(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:

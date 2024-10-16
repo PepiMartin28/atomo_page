@@ -6,7 +6,7 @@ import { TextModal } from '../components/TextModal';
 import { Editor } from '@tinymce/tinymce-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { verifyToken } from '../api/auth/verifyToken';
-import { addContent } from '../api/protocol/addContent';
+import { addContent } from '../api/protocol/content_functions/addContent';
 import { CloseIcon } from '@chakra-ui/icons';
 
 export function AddContentPage() {
@@ -96,7 +96,7 @@ export function AddContentPage() {
             <NavBar />
             <Box mx="auto" w="full" maxW="md" pt={24} px={6}>
                 <Heading mt={5} textAlign="center" fontWeight="bold" color="black">
-                    Agregue un nuevo protocolo
+                    Agregue un contenido
                 </Heading>
             </Box>
             <Flex direction="column" align="center" p={6} mb={12} mt={5}>

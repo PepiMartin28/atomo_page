@@ -5,8 +5,8 @@ import { ProtocolAdminCard } from '../components/ProtocolAdminCard.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { verifyToken } from '../api/auth/verifyToken.js';
-import { getAllProtocols } from '../api/protocol/getAllProtocols.js';
-import { getAllCategories } from '../api/protocol/getAllCategories.js';
+import { getAllProtocols } from '../api/protocol/protocols_functions/getAllProtocols.js';
+import { getAllCategories } from '../api/protocol/category_functions/getAllCategories.js';
 
 export function ProtocolPage() {
     const [protocols, setProtocols] = useState([]);

@@ -4,9 +4,9 @@ import { NavBar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { TextModal } from '../components/TextModal';
 import { Editor } from '@tinymce/tinymce-react';
-import { addProtocol } from '../api/protocol/addProtocol';
+import { addProtocol } from '../api/protocol/protocols_functions/addProtocol';
 import { useNavigate } from 'react-router-dom';
-import { getAllCategories } from '../api/protocol/getAllCategories';
+import { getAllCategories } from '../api/protocol/category_functions/getAllCategories';
 import { verifyToken } from '../api/auth/verifyToken';
 
 export function AddProtocolPage() {
@@ -33,7 +33,7 @@ export function AddProtocolPage() {
 
         const listCategories = async () => {
             try {
-                const response = await getAllCategories();
+                await getAllCategories();
                 setCategories(['Elija una categoría', ...response]);
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
@@ -61,7 +61,7 @@ export function AddProtocolPage() {
         const summary = removeHtmlTags(text);
 
         try {
-            const response = await addProtocol(protocolTitle, protocolAuthor, summary, category);
+            await addProtocol(protocolTitle, protocolAuthor, summary, category);
             setTitle('Protocolo creado');
             setMessage('El protocolo se ha creado correctamente.');
             onTextOpen();

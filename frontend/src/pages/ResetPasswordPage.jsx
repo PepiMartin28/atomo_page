@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, FormControl, FormLabel, Heading, Image, Stack, Input as ChakraInput, InputGroup, InputRightElement, useDisclosure } from '@chakra-ui/react';
 import LogoAtomo from '/logo-atomo.svg';
 import { TextModal } from '../components/TextModal';
-import { resetPassword } from '../api/employee/resetPassword';
+import { resetPassword } from '../api/employee/employees_functions/resetPassword';
 
 export function ResetPasswordPage() {
   const { employee_id } = useParams();
@@ -39,7 +39,7 @@ export function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      const response = await resetPassword(employee_id, password);
+      await resetPassword(employee_id, password);
       setTitle('Contraseña restablecida');
       setMessage('Su contraseña ha sido restablecida exitosamente.');
       onTextOpen();

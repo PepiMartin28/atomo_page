@@ -16,6 +16,13 @@ import { CategoriesPage } from "./pages/CategoriesPage";
 import { CategoryDetailPage } from "./pages/CategoryDetailPage";
 import { AddCategoryPage } from "./pages/AddCategoryPage";
 import { EditCategoryPage } from "./pages/EditCategoryPage";
+import { EmployeeAdminPage } from "./pages/EmployeeAdminPage";
+import { GroupsPage } from "./pages/GroupsPage";
+import { GroupDetailPage } from "./pages/GroupDetailPage";
+import { AddGroupPage } from "./pages/AddGroupPage";
+import { EditGroupPage } from "./pages/EditGroupPage";
+import { StateEmployeePage } from "./pages/StateEmployeePage";
+import { GetLogsPage } from "./pages/GetLogsPage";
 
 function App() {
 
@@ -40,9 +47,13 @@ function App() {
         <Route path="/admin/categories/:category_id" element={<CategoryDetailPage />} />
         <Route path="/admin/categories/add_category" element={<AddCategoryPage />} />
         <Route path="/admin/categories/edit_category/:category_id" element={<EditCategoryPage />} />
-        {/* <Route path="/admin/employees" element={<RegisterPage />} /> */}
-        {/* <Route path="/admin/groups" element={<RegisterPage />} /> */}
-        {/* <Route path="/admin/categories" element={<RegisterPage />} /> */}
+        <Route path="/admin/employees" element={<EmployeeAdminPage />} />
+        <Route path="/admin/groups" element={<GroupsPage />} />
+        <Route path="/admin/groups/:group_id" element={<GroupDetailPage />} />
+        <Route path="/admin/groups/add_group" element={<AddGroupPage />} />
+        <Route path="/admin/groups/edit_group/:group_id" element={<EditGroupPage />} />
+        <Route path="/admin/stateEmployee" element={<StateEmployeePage />} />
+        <Route path="/admin/logs" element={<GetLogsPage />} />
       </Routes>
     </BrowserRouter>
   )

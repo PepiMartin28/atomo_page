@@ -15,7 +15,7 @@ content_routes = Blueprint(name='content_routes', import_name=__name__)
 def post():
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     protocol_id = request.form.get('protocol_id')
     content = request.form.get('content')
@@ -57,7 +57,7 @@ def update(id):
     
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     content_id = validate_uuid(id)
     if not content_id:
@@ -113,7 +113,7 @@ def update(id):
 def delete(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     content_id = validate_uuid(id)
     if not content_id:
@@ -139,7 +139,7 @@ def delete(id):
 def active(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     content_id = validate_uuid(id)
     if not content_id:

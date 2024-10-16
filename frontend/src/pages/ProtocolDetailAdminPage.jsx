@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { NavBar } from '../components/Navbar';
 import { ContentCard } from '../components/ContentCard';
 import { verifyToken } from '../api/auth/verifyToken';
-import { getProtocolDetail } from '../api/protocol/getProtocolDetail';
-import { deleteProtocol } from '../api/protocol/deleteProtocol';
-import { activeProtocol } from '../api/protocol/activeProtocol';
+import { getProtocolDetail } from '../api/protocol/protocols_functions/getProtocolDetail';
+import { deleteProtocol } from '../api/protocol/protocols_functions/deleteProtocol';
+import { activeProtocol } from '../api/protocol/protocols_functions/activeProtocol';
 import { Box, Heading, Stack, Text, Divider, Spinner, Center, Button, Flex, useDisclosure } from '@chakra-ui/react';
 import { Footer } from '../components/Footer';
 import { TextModal } from '../components/TextModal';
@@ -64,7 +64,7 @@ export function ProtocolDetailAdminPage() {
     const handleDeleteProtocol = async () => {
         onTextClose();
         try {
-            const response = await deleteProtocol(protocol_id);
+            await deleteProtocol(protocol_id);
             setTitle('Protocolo eliminado');
             setMessage('El protocolo se ha eliminado correctamente');
             onConfirmOpen();
@@ -80,7 +80,7 @@ export function ProtocolDetailAdminPage() {
     const handleActiveProtocol = async () => {
         onTextClose();
         try {
-            const response = await activeProtocol(protocol_id);
+            await activeProtocol(protocol_id);
             setTitle('Protocolo activado');
             setMessage('El protocolo se ha activado correctamente');
             onConfirmOpen();
@@ -95,7 +95,7 @@ export function ProtocolDetailAdminPage() {
 
     const handleConfirm = () => {
         onConfirmClose();
-        navigate('/admin/protocols');
+        window.location.reload();
     };
 
     if (!protocol) {
@@ -116,12 +116,12 @@ export function ProtocolDetailAdminPage() {
                 <Stack direction="row" spacing={4} my={4}>
                     <Button colorScheme="teal" onClick={handleAddContent}>
                         <Text fontSize="sm" color="white">
-                            Agregar Contenido
+                            Agregar contenido
                         </Text>
                     </Button>
                     <Button colorScheme="blue" onClick={handleEditProtocol}>
                         <Text fontSize="sm" color="white">
-                            Editar Protocolo
+                            Editar protocolo
                         </Text>
                     </Button>
                     <Button isLoading={loading} colorScheme={protocol.active ? 'red' : 'green'} onClick={handleClick}>

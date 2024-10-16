@@ -5,9 +5,8 @@ import { Footer } from "../components/Footer";
 import { TextModal } from '../components/TextModal';
 import { Editor } from '@tinymce/tinymce-react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { getAllCategories } from '../api/protocol/getAllCategories';
 import { verifyToken } from '../api/auth/verifyToken';
-import { editProtocol } from '../api/protocol/editProtocol';
+import { editProtocol } from '../api/protocol/protocols_functions/editProtocol';
 
 export function EditProtocolPage (){
 
@@ -59,7 +58,7 @@ export function EditProtocolPage (){
         const summary =  removeHtmlTags(text)
 
         try {
-            const response = await editProtocol(protocol_id, protocolTitle, protocolAuthor, summary)
+            await editProtocol(protocol_id, protocolTitle, protocolAuthor, summary)
             setTitle('Protocolo editado')
             setMessage('El protocolo se ha modificado correctamente.')
             onTextOpen();

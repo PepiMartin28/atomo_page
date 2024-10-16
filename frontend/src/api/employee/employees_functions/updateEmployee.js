@@ -15,7 +15,7 @@ export const updateEmployee = async (employee) => {
     }
 
     try {
-        const response = await axios.put(`${url}/employee/${employee.id}`, data, {
+        const response = await axios.put(`${url}/employee/${employee.employee_id}`, data, {
             headers: {
                 'Authorization': `${token}`
             }

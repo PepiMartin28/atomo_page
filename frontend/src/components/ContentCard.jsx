@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Stack, Link, Badge, Box, Button, HStack, useDisclosure } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { TextModal } from './TextModal';
-import { deleteContent } from '../api/protocol/deleteContent';
-import { activeContent } from '../api/protocol/activeContent';
+import { deleteContent } from '../api/protocol/content_functions/deleteContent';
+import { activeContent } from '../api/protocol/content_functions/activeContent';
 
 export function ContentCard({ content, isAdmin }) {
     const [message, setMessage] = useState('');
@@ -27,7 +27,7 @@ export function ContentCard({ content, isAdmin }) {
     const handleDeleteContent = async () => {
         onTextClose();
         try {
-            const response = await deleteContent(content.content_id);
+            await deleteContent(content.content_id);
             setTitle('Contenido eliminado');
             setMessage('El contenido se ha eliminado correctamente');
             onConfirmOpen();
@@ -43,7 +43,7 @@ export function ContentCard({ content, isAdmin }) {
     const handleActiveContent = async () => {
         onTextClose();
         try {
-            const response = await activeContent(content.content_id);
+            await activeContent(content.content_id);
             setTitle('Contenido activado');
             setMessage('El contenido se ha activado correctamente');
             onConfirmOpen();
@@ -58,7 +58,7 @@ export function ContentCard({ content, isAdmin }) {
 
     const handleConfirm = () => {
         onConfirmClose();
-        navigate(`/admin/protocols/`);
+        window.location.reload();
     };
 
     const imageUrl = content.image ? `http://127.0.0.1:8000/api/v1/content/${content.image.split('\\').pop()}` : null;

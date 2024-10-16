@@ -11,7 +11,7 @@ from src.apps.employees.routes.auth_routes import auth_routes
 from src.apps.protocols.routes.protocols_routes import protocol_routes
 from src.apps.protocols.routes.content_routes import content_routes
 from src.apps.protocols.routes.category_routes import category_routes
-
+from src.apps.logs.routes import log_routes
 
 app = Flask(__name__)
 
@@ -43,3 +43,4 @@ app.register_blueprint(auth_routes, url_prefix='/api/v1/auth')
 app.register_blueprint(protocol_routes, url_prefix='/api/v1/protocol')
 app.register_blueprint(content_routes, url_prefix='/api/v1/content')
 app.register_blueprint(category_routes, url_prefix='/api/v1/category')
+app.register_blueprint(log_routes, url_prefix='/api/v1/logs')

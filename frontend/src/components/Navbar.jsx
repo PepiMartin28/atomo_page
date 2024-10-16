@@ -15,7 +15,7 @@ import {
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LogoAtomo from '../assets/logo-atomo-blanco.svg';
-import { getEmployee } from '../api/employee/getEmployee';
+import { getEmployeeInfo } from '../api/employee/employees_functions/getEmployeeInfo';
 
 const initialNavigation = [
   { name: 'Inicio', href: '/employee'}
@@ -36,9 +36,9 @@ export function NavBar() {
   };
 
   useEffect(() => {
-    const getEmployeeInfo = async () => {
+    const getEmployeeInformation = async () => {
       try {
-        const data = await getEmployee();
+        const data = await getEmployeeInfo();
         setEmployee(data);
         if (data.group_name === 'Administrador') {
           setNavigation(adminNavigation);
@@ -50,7 +50,7 @@ export function NavBar() {
       }
     };
 
-    getEmployeeInfo();
+    getEmployeeInformation();
   }, []);
 
   const menuButtonText = useBreakpointValue({
@@ -104,9 +104,9 @@ export function NavBar() {
                   {menuButtonText}
                 </MenuButton>
                 <MenuList>
-                  <MenuItem onClick={() => navigate('/profile')}>Mi Perfil</MenuItem>
+                  <MenuItem onClick={() => navigate('/profile')}>Mi perfil</MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
+                  <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
                 </MenuList>
               </Menu>
             </HStack>

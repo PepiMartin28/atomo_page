@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { getEmployee } from '../api/employee/getEmployee';
+import { getEmployeeInfo } from '../api/employee/employees_functions/getEmployeeInfo';
 import { NavBar } from '../components/Navbar';
 import { Box, Text, Spinner, Flex, Heading, VStack, Button, useDisclosure, Input, Select } from '@chakra-ui/react';
-import { deleteEmployee } from '../api/employee/deleteEmployee';
-import { updateEmployee } from '../api/employee/updateEmployee';
+import { deleteEmployee } from '../api/employee/employees_functions/deleteEmployee';
+import { updateEmployee } from '../api/employee/employees_functions/updateEmployee';
 import { useNavigate } from 'react-router-dom';
-import { ConfirmationModal } from '../components/ConfirmationModal';
 import { TextModal } from '../components/TextModal';
 import { Footer } from '../components/Footer';
 
@@ -17,36 +16,29 @@ export function ProfilePage() {
   const [editedEmployee, setEditedEmployee] = useState({});
   const { isOpen: isTextOpen, onOpen: onTextOpen, onClose: onTextClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
-  const { isOpen: isModifyOpen, onOpen: onModifyOpen, onClose: onModifyClose } = useDisclosure();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getEmployeeInfo = async () => {
+    const getInfoEmployee = async () => {
       try {
-        const data = await getEmployee();
+        const data = await getEmployeeInfo();
         setEmployee(data);
         setEditedEmployee(data);
       } catch (error) {
         console.log(error);
       }
     };
-    getEmployeeInfo();
-  }, []);
+    const checkToken = async () => {
+      try {
+          await verifyToken(navigate);
+      } catch (error) {
+          console.error("Token verification failed:", error);
+      }
+    };
 
-  const handleDelete = async () => {
-    try {
-      const response = await deleteEmployee(employee.id);
-      setMessage('La cuenta se ha eliminado correctamente.');
-      setTitle('Cuenta eliminada');
-      onDeleteClose();
-      onTextOpen();
-      navigate('/');
-    } catch (error) {
-      setMessage('Error al eliminar la cuenta.');
-      setTitle('ERROR');
-      onTextOpen();
-    }
-  };
+    checkToken();
+    getInfoEmployee();
+  }, [navigate]);
 
   const handleModify = () => {
     setEditMode(true);
@@ -60,9 +52,15 @@ export function ProfilePage() {
     }));
   };
 
+  const handleClickDelete = async () => {
+    setTitle('Eliminar cuenta')
+    setMessage('¿Estás seguro que quiere eliminar tu cuenta?')
+    onDeleteOpen()
+  };
+
   const handleSave = async () => {
     try {
-      const response = await updateEmployee(editedEmployee);
+      await updateEmployee(editedEmployee);
       setMessage('Perfil actualizado correctamente');
       setTitle('Datos modificados');
       setEmployee(editedEmployee);
@@ -72,6 +70,21 @@ export function ProfilePage() {
     } catch (error) {
       setTitle('ERROR')
       setMessage('Ha ocurrido un error, por favor intenta más tarde')
+      onTextOpen();
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteEmployee(employee.id);
+      setMessage('La cuenta se ha eliminado correctamente.');
+      setTitle('Cuenta eliminada');
+      onDeleteClose();
+      onTextOpen();
+      navigate('/');
+    } catch (error) {
+      setMessage('Error al eliminar la cuenta.');
+      setTitle('ERROR');
       onTextOpen();
     }
   };
@@ -92,7 +105,7 @@ export function ProfilePage() {
       <NavBar />
       <Flex direction="column" align="center" flex="1" mt={24} mb={10} p={5}>
         <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p={5} maxWidth="500px" width="100%">
-          <Heading as="h2" size="lg" mb={3}>Perfil del Empleado</Heading>
+          <Heading as="h2" size="lg" mb={3}>Perfil del empleado</Heading>
           <VStack align="start" spacing={2}>
             {editMode ? (
               <>
@@ -124,39 +137,30 @@ export function ProfilePage() {
           <Flex mt={4} justify="space-between">
             {editMode ? (
               <>
-                <Button colorScheme="blue" onClick={onModifyOpen}>Guardar</Button>
+                <Button colorScheme="blue" onClick={handleSave}>Guardar</Button>
                 <Button onClick={() => setEditMode(false)}>Cancelar</Button>
               </>
             ) : (
               <>
                 <Button colorScheme="blue" onClick={handleModify}>Modificar perfil</Button>
-                <Button colorScheme="red" onClick={onDeleteOpen}>Eliminar cuenta</Button>
+                <Button colorScheme="red" onClick={handleClickDelete}>Eliminar cuenta</Button>
               </>
             )}
           </Flex>
         </Box>
       </Flex>
       <Footer />
-      <ConfirmationModal
-        type="update"
-        isOpen={isModifyOpen}
-        onClose={onModifyClose}
-        onClick={handleSave}
-        textHeader="Modificar Perfil"
-        textBody="¿Estás seguro que deseas modificar tus datos?"
-      />
-      <ConfirmationModal
-        type="delete"
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-        onClick={handleDelete}
-        textHeader="Confirmar Baja"
-        textBody="¿Estás seguro que deseas dar de baja esta cuenta?"
-      />
       <TextModal
         isOpen={isTextOpen}
         onClose={onTextClose}
         onClick={onTextClose}
+        textBody={message}
+        textHeader={title}
+      />
+      <TextModal
+        isOpen={isDeleteOpen}
+        onClose={onDeleteClose}
+        onClick={handleDelete}
         textBody={message}
         textHeader={title}
       />

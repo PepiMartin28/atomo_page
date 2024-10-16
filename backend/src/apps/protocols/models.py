@@ -3,6 +3,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Uuid, DateTime, String, Integer, Boolean, Text
 from datetime import datetime
+from typing import List
 from src.services.db import db
 
 # Clase para los protocolos
@@ -16,8 +17,8 @@ class Protocol(db.Model):
     active: Mapped[Boolean] = mapped_column(Boolean, nullable=False, default=True)
     created_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now())
     updated_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(), onupdate=lambda: datetime.now())
-    content: Mapped[list["Content"]] = relationship('Content', back_populates='protocol')
-    protocolCategory: Mapped[list["ProtocolCategory"]] = relationship('ProtocolCategory', back_populates='protocol')
+    content: Mapped[List["Content"]] = relationship('Content', back_populates='protocol')
+    protocolCategory: Mapped[List["ProtocolCategory"]] = relationship('ProtocolCategory', back_populates='protocol')
 
     def __repr__(self):
         return f'{self.title}'
@@ -28,7 +29,7 @@ class Content(db.Model):
 
     content_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     author: Mapped[str] = mapped_column(String(100), nullable=True)
-    content: Mapped[str] = mapped_column(Text, nullable=True)
+    body: Mapped[str] = mapped_column(Text, nullable=True)  # Renombrado de 'content' a 'body'
     order: Mapped[int] = mapped_column(Integer)
     image: Mapped[str] = mapped_column(Text, nullable=True)
     document: Mapped[str] = mapped_column(Text, nullable=True)
@@ -51,14 +52,14 @@ class Category(db.Model):
     active: Mapped[Boolean] = mapped_column(Boolean, nullable=False, default=True)
     created_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now())
     updated_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(), onupdate=lambda: datetime.now())
-    protocolCategory: Mapped[list["ProtocolCategory"]] = relationship('ProtocolCategory', back_populates='category')
+    protocolCategory: Mapped[List["ProtocolCategory"]] = relationship('ProtocolCategory', back_populates='category')
 
     def __repr__(self):
         return f'{self.category_name}'
 
 # Clase intermedia entre protocolos y las categorías
 class ProtocolCategory(db.Model):
-    __tablename__ = 'protocolCategories'
+    __tablename__ = 'protocolcategories'
 
     protocolCategory_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     protocol_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), ForeignKey('protocols.protocol_id'))

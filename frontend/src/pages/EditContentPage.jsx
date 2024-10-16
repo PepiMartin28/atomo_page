@@ -6,7 +6,7 @@ import { TextModal } from '../components/TextModal';
 import { Editor } from '@tinymce/tinymce-react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { verifyToken } from '../api/auth/verifyToken';
-import { editContent } from '../api/protocol/editContent';
+import { editContent } from '../api/protocol/content_functions/editContent';
 import { CloseIcon } from '@chakra-ui/icons';
 
 export function EditContentPage() {
@@ -114,7 +114,7 @@ export function EditContentPage() {
             <NavBar />
             <Box mx="auto" w="full" maxW="md" pt={24} px={6}>
                 <Heading mt={5} textAlign="center" fontWeight="bold" color="black">
-                    Editar Contenido
+                    Editar contenido
                 </Heading>
             </Box>
             <Flex direction="column" align="center" p={6} mb={12} mt={5}>

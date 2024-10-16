@@ -3,7 +3,7 @@ import { Box, Flex, Heading, VStack, Button, useDisclosure, Input, Select, Image
 import { useNavigate, useParams } from 'react-router-dom';
 import { TextModal } from '../components/TextModal';
 import LogoAtomo from '/logo-atomo.svg';
-import { registerEmployee } from '../api/employee/registerEmployee';
+import { registerEmployee } from '../api/employee/employees_functions/registerEmployee';
 
 export function RegisterPage() {
   const { employee_id } = useParams();
@@ -56,12 +56,11 @@ export function RegisterPage() {
     }
 
     try {
-        const response = await registerEmployee(employee_id, data);
+        await registerEmployee(employee_id, data);
         setTitle('Datos guardados');
         setMessage('Sus datos se han registrado correctamente.');
         onTextOpen();
     } catch (error) {
-        console.log(error)
         setTitle('ERROR');
         setMessage('Ha ocurrido un error, por favor intente más tarde.');
         onTextOpen();

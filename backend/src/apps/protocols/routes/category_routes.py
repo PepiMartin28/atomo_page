@@ -12,15 +12,14 @@ category_routes = Blueprint(name='category_routes', import_name=__name__)
 def post(): 
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     data = request.get_json()
     
     try:
         duplicated = Category.query.filter_by(category_name=data['category_name']).all()
-        
         if duplicated:
-            return jsonify({'message': f'Ya existe una categoría con este nombre: {data['category_name']}'}), 400
+            return jsonify({'message': f'Ya existe una categoría con este nombre: {data["category_name"]}'}), 400
         
         category = Category(**data)
         db.session.add(category)
@@ -35,7 +34,7 @@ def post():
 def list():
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     try:
         categories = Category.query.all()
@@ -56,7 +55,7 @@ def list():
 def categories_by_group():
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     data = get_fields(request.headers, ['group_name'])
     
@@ -86,10 +85,10 @@ def categories_by_group():
 def list_all():
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     try:
-        categories = Category.query.all()
+        categories = Category.query.order_by(Category.category_name).all()
         
         if not categories:
             return jsonify({'message':'No hay categorías'}), 404
@@ -104,7 +103,7 @@ def list_all():
 def get(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -120,7 +119,7 @@ def get(id):
             db.session.query(
                 Protocol.title,
                 Protocol.protocol_id,
-                Protocol.summary,
+                Protocol.summary, 
                 ProtocolCategory.active,
             )
             .join(ProtocolCategory, Protocol.protocol_id == ProtocolCategory.protocol_id)
@@ -151,11 +150,50 @@ def get(id):
     except Exception as e:
         return jsonify({'message': f'Ocurrió un error: {str(e)}'}), 500
     
+@category_routes.get('/unassociated_protocols/<id>')
+def get_unassociated_protocols(id):
+    token_valid = check_token(request.headers, 'Administrador')
+    if not token_valid:
+        return jsonify({'message': 'No tiene permisos'}), 403
+    
+    id = validate_uuid(id)
+    if not id:
+        return jsonify({"message": "Ingrese un id válido"}), 400
+    
+    try:
+        category = Category.query.get(id)
+        
+        if not category:
+            return {"message": "No existe la categoría buscada"}, 404
+        
+        query = (
+            db.session.query(
+                Protocol.title,
+                Protocol.protocol_id,
+            )
+            .outerjoin(ProtocolCategory, 
+                    (Protocol.protocol_id == ProtocolCategory.protocol_id) &
+                    (ProtocolCategory.category_id == id))
+            .filter(ProtocolCategory.category_id == None)
+        ) 
+        
+        protocols = query.all()
+        
+        all_protocols = [{
+            'title': protocol.title,
+            'protocol_id': protocol.protocol_id,
+            } for protocol in protocols]
+    
+        
+        return all_protocols, 200
+    except Exception as e:
+        return jsonify({'message': f'Ocurrió un error: {str(e)}'}), 500
+    
 @category_routes.put('/<id>')
 def update(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -169,10 +207,10 @@ def update(id):
         
         data = request.get_json()
         
-        if 'category_name' in data:
+        if data['category_name'] != category.category_name_:
             duplicated = Category.query.filter_by(category_name=data['category_name']).all()
             if duplicated:
-                return jsonify({'message': f'Ya existe una categoría con este nombre: {data['category_name']}'}), 400
+                return jsonify({'message': f'Ya existe una categoría con este nombre: {data["category_name"]}'}), 400
         
         update_features(model=category, data=data)   
         
@@ -187,7 +225,7 @@ def update(id):
 def delete(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -212,7 +250,7 @@ def delete(id):
 def active(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -237,7 +275,7 @@ def active(id):
 def add_protocol(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     category_id = validate_uuid(id)
     if not id:
@@ -267,7 +305,7 @@ def add_protocol(id):
 def delete_protocol(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     category_id = validate_uuid(id)
     if not id:
@@ -296,7 +334,7 @@ def delete_protocol(id):
 def active_protocol(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     category_id = validate_uuid(id)
     if not id:

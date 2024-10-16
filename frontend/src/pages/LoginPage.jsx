@@ -24,7 +24,8 @@ import {
 import LogoAtomo from '/logo-atomo.svg';
 import { login } from '../api/auth/login';
 import { verifyToken } from '../api/auth/verifyToken';
-import { forgotPassword } from '../api/employee/forgotPassword';
+import { forgotPassword } from '../api/employee/employees_functions/forgotPassword';
+import { loginLog } from '../api/logs_functions/loginLog';
 import { TextModal } from '../components/TextModal';
 
 export function LoginPage() {
@@ -56,14 +57,17 @@ export function LoginPage() {
       const response = await login(email, password);
       localStorage.setItem('token', `Bearer ${response.token}`);
 
+      await loginLog()
+
       if (response.group === 'Administrador') {
         navigate('/admin');
       } else {
         navigate('/employee');
       }
-    } catch (err) {
+    } catch (error) {
       setError('Error al iniciar sesión, por favor intente nuevamente más tarde.');
       setLoading(false);
+      localStorage.removeItem('token');
     }
   };
 

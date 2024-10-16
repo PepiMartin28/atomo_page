@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavBar } from '../components/Navbar';
 import { Box, Text, Flex, Heading, VStack, Button, useDisclosure, Input } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { TextModal } from '../components/TextModal';
 import { Footer } from '../components/Footer';
-import { addCategory } from '../api/protocol/addCategory';
+import { addCategory } from '../api/protocol/category_functions/addCategory';
+import { verifyToken } from '../api/auth/verifyToken';
 
 export function AddCategoryPage() {
   const [categoryName, setCategoryName] = useState('');
@@ -14,6 +15,18 @@ export function AddCategoryPage() {
   const [error, setError] = useState('');
   const { isOpen: isTextOpen, onOpen: onTexOpen, onClose: onTextClose } = useDisclosure();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkToken = async () => {
+        try {
+            await verifyToken(navigate);
+        } catch (error) {
+            console.error("Token verification failed:", error);
+        }
+    };
+
+    checkToken();
+  }, [navigate]);
 
   const handleCategoryNameChange = (e) => {
     setCategoryName(e.target.value);
@@ -30,7 +43,7 @@ export function AddCategoryPage() {
     }
 
     try {
-      const response = await addCategory(categoryName, description);
+      await addCategory(categoryName, description);
       setTitle('Categoría creada');
       setMessage('La categoría se ha creado correctamente.');
       onTexOpen();
@@ -54,7 +67,7 @@ export function AddCategoryPage() {
             <Input name="description" value={description} onChange={handleDescriptionChange} placeholder="Descripción" />
           </VStack>
           {error && <Box color="red.300" fontWeight="bold" mt={2}>{error}</Box>}
-          <Button mt={2} colorScheme="red" w="full" onClick={handleSubmit}>Enviar</Button>
+          <Button mt={4} colorScheme="red" w="full" onClick={handleSubmit}>Enviar</Button>
         </Box>
       </Flex>
       <Footer />

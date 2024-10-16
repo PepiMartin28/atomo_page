@@ -11,15 +11,14 @@ statEemployee_routes = Blueprint(name='statEemployee_routes', import_name=__name
 def post():
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     data = request.get_json()
-    print(data)
+    
     try:
         duplicated = StateEmployee.query.filter_by(state_name=data['state_name']).all()
-        
         if duplicated:
-            return jsonify({'message': f'Ya existe un estado de empleado con este nombre: {data['state_name']}'}), 400
+            return jsonify({'message': f'Ya existe un estado de empleado con este nombre: {data["state_name"]}'}), 400
         
         state = StateEmployee(state_name=data['state_name'])
         db.session.add(state)
@@ -34,7 +33,7 @@ def post():
 def list():
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     try:
         states = db.session.query(StateEmployee).all()
@@ -54,7 +53,7 @@ def list():
 def get(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -80,7 +79,7 @@ def get(id):
 def update(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -94,9 +93,10 @@ def update(id):
         
         data = request.get_json()
         
-        duplicated = StateEmployee.query.filter_by(state_name=data['state_name']).all()
-        if duplicated:
-            return jsonify({'message': f'Ya existe un estado de empleado con este nombre: {data['state_name']}'}), 400
+        if data['state_name'] != state.state_name:
+            duplicated = StateEmployee.query.filter_by(state_name=data['state_name']).all()
+            if duplicated:
+                return jsonify({'message': f'Ya existe un estado de empleado con este nombre: {data["state_name"]}'}), 400
         
         state.state_name = data['state_name']
         
@@ -111,7 +111,7 @@ def update(id):
 def delete(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -136,7 +136,7 @@ def delete(id):
 def active(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:

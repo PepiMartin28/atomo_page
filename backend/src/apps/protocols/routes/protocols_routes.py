@@ -13,7 +13,7 @@ protocol_routes = Blueprint(name='protocol_routes', import_name=__name__)
 def post():
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     data = request.get_json()
     
@@ -49,7 +49,7 @@ def post():
 def list():
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     data = get_fields(request.headers, ['group_name'])
     
@@ -74,6 +74,7 @@ def list():
         .filter(Group.group_name == data['group_name'])
         .filter(Protocol.active == True)
         .filter(Category.active == True)
+        .group_by(Protocol.protocol_id)
     )
     
     if category != 'All':
@@ -112,7 +113,7 @@ def list():
 def list_all():
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     page_num = request.args.get('page', 1, type=int)
     category = request.args.get('category', 'All')
@@ -129,9 +130,10 @@ def list_all():
             Protocol.active,
             Protocol.author,
             Category.category_name
-        )
-        .outerjoin(ProtocolCategory, Protocol.protocol_id == ProtocolCategory.protocol_id)
-        .outerjoin(Category, Category.category_id == ProtocolCategory.category_id)
+        ) 
+        .join(ProtocolCategory, Protocol.protocol_id == ProtocolCategory.protocol_id)
+        .join(Category, Category.category_id == ProtocolCategory.category_id)
+        .group_by(Protocol.protocol_id)
         .filter(Category.active == True)
     )
     
@@ -175,7 +177,7 @@ def list_all():
 def get(id):
     token_valid = check_token(request.headers)
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -235,7 +237,7 @@ def get(id):
 def update(id):
     token_valid = check_token(request.headers, group='Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -263,7 +265,7 @@ def update(id):
 def delete(id):
     token_valid = check_token(request.headers, 'Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:
@@ -288,7 +290,7 @@ def active(id):
     
     token_valid = check_token(request.headers, group='Administrador')
     if not token_valid:
-        return jsonify({'message': 'No tiene permisos'}), 400
+        return jsonify({'message': 'No tiene permisos'}), 403
     
     id = validate_uuid(id)
     if not id:

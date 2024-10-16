@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Uuid, DateTime, String, Boolean, Text
 from datetime import datetime
 from src.services.db import db
+from typing import List
 from src.apps.protocols.models import Category
 
 #Clase para los grupos de empleados
@@ -17,8 +18,8 @@ class Group(db.Model):
     active: Mapped[Boolean] = mapped_column(Boolean, nullable=False, default=True)
     created_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now())
     updated_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(), onupdate=lambda: datetime.now())
-    employees: Mapped[list["Employee"]] = relationship('Employee', back_populates='group')
-    groupCategories: Mapped[list["GroupCategory"]] = relationship('GroupCategory', back_populates='group')
+    employees: Mapped[List["Employee"]] = relationship('Employee', back_populates='group')
+    groupCategories: Mapped[List["GroupCategory"]] = relationship('GroupCategory', back_populates='group')
 
     def __repr__(self):
         return f'{self.group_name}'
@@ -39,41 +40,44 @@ class Employee(db.Model):
     updated_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(), onupdate=lambda: datetime.now())
     group_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), ForeignKey('groups.group_id'))
     group: Mapped[Group] = relationship('Group', back_populates='employees')
-    employeeStates: Mapped[list["EmployeeState"]] = relationship('EmployeeState', back_populates='employee')
+    employeeStates: Mapped[List["EmployeeState"]] = relationship('EmployeeState', back_populates='employee')
 
     def __repr__(self):
         return f'{self.email} - {self.group.group_name}'
 
 #Clase para los estados del empleado
 class StateEmployee(db.Model):
-    __tablename__ = 'stateEmployees'
+    __tablename__ = 'stateemployees'
 
     stateEmployee_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     state_name: Mapped[str] = mapped_column(String(50))
     active: Mapped[Boolean] = mapped_column(Boolean, nullable=False, default=True)
     created_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now())
     updated_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(), onupdate=lambda: datetime.now())
+    employeeStates: Mapped[List["EmployeeState"]] = relationship('EmployeeState', back_populates='stateEmployee')
 
     def __repr__(self):
         return f'{self.state_name}'
 
+
 #Clase intermedia entre los empleados y sus estados
 class EmployeeState(db.Model):
-    __tablename__ = 'employeeStates'
+    __tablename__ = 'employeestates'
 
     employeeState_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    stateEmployee_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), ForeignKey('stateEmployees.stateEmployee_id'))
-    stateEmployee: Mapped["StateEmployee"] = relationship('StateEmployee')
+    stateEmployee_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), ForeignKey('stateemployees.stateEmployee_id'))
+    stateEmployee: Mapped["StateEmployee"] = relationship('StateEmployee', back_populates='employeeStates')
     employee_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), ForeignKey('employees.employee_id'))
     employee: Mapped["Employee"] = relationship('Employee', back_populates='employeeStates')
     created_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now())
     
     def __repr__(self):
         return f'{self.employee.email} - {self.stateEmployee.state_name}'
+
     
 #Clase intermedia entre los empleados y sus estados
 class GroupCategory(db.Model):
-    __tablename__ = 'groupCategories'
+    __tablename__ = 'groupcategories'
 
     groupCategory_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     group_id: Mapped[Uuid] = mapped_column(Uuid(as_uuid=True), ForeignKey('groups.group_id'))

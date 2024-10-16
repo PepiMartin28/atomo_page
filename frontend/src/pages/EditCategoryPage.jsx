@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavBar } from '../components/Navbar';
 import { Box, Text, Flex, Heading, VStack, Button, useDisclosure, Input } from '@chakra-ui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TextModal } from '../components/TextModal';
 import { Footer } from '../components/Footer';
-import { editCategory } from '../api/protocol/editCategory';
+import { editCategory } from '../api/protocol/category_functions/editCategory';
+import { verifyToken } from '../api/auth/verifyToken';
 
 export function EditCategoryPage() {
   const location = useLocation();
@@ -16,6 +17,18 @@ export function EditCategoryPage() {
   const [error, setError] = useState('');
   const { isOpen: isTextOpen, onOpen: onTexOpen, onClose: onTextClose } = useDisclosure();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkToken = async () => {
+        try {
+            await verifyToken(navigate);
+        } catch (error) {
+            console.error("Token verification failed:", error);
+        }
+    };
+
+    checkToken();
+  }, [navigate]);
 
   const handleCategoryNameChange = (e) => {
     setCategoryName(e.target.value);
@@ -32,7 +45,7 @@ export function EditCategoryPage() {
     }
 
     try {
-      const response = await editCategory(category.category_id, categoryName, description);
+      await editCategory(category.category_id, categoryName, description);
       setTitle('Categoría editada');
       setMessage('La categoría se ha editado correctamente.');
       onTexOpen();
